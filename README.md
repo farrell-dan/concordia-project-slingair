@@ -153,11 +153,4 @@ In order to incorporate the Database, you will need to setup your backend as it 
 }
 ```
 
-### Stretch
 
-- Validate the data being sent to the server.
-- Check if the seat being booked is available (creating / updating a reservation).
-- Create an interface for users to search, update and/or cancel their reservation at `/reservation`.
-- Create an admin interface at `/admin` to view all of the reservation. (The design is up to you.)
-- Even more flights with randomized reserved seats!
-- Any other improvements that you would like to make! Go wild! (like making it less ugly)
