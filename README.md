@@ -92,12 +92,11 @@ In order for your project to be considered `DONE` (passing grade), you should ha
      - Should respond with an array of seating information.
    - Retrieve all reservations.
      - **_Must work through Insomnia._**
-     - **_Having a FE component do this is a stretch goal._**
    - Retrieve a single reservation.
    - Create a reservation.
      - Needs to insert a document into the `reservations` collection.
      - Needs to modify a document in the `flights` collection.
-     - Should respond with the \_id the was created.
+     - Should respond with the \_id that was created.
    - Delete a reservation.
      - Needs to modify or delete a document in the `reservations` collection.
      - Needs to modify a document in the `flights` collection.
