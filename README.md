@@ -43,7 +43,7 @@ Add the `proxy` into the `client`'s `package.json` file:
 - User selects a seat, enters information and clicks 'Confirm'.
 - Contact the server with the data, and wait for a success response to redirect to the `/confirmation` page.
 - The confirmation page should display a confirmation message to the user with the info that they entered on the previous screen.
-- Consider using `localStorage` to save the reservation id, to allow for retrieval if the user closes and reopens the browser at `/reservation`.
+
 
 ---
 
