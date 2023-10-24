@@ -1,6 +1,6 @@
 "use strict";
 
-const { MongoClient, ObjectId } = require("mongodb");
+const { MongoClient } = require("mongodb");
 const { MONGO_URI } = process.env;
 const options = {
   useNewUrlParser: true,
@@ -16,10 +16,8 @@ const getSingleReservation = async (req, res) => {
   try {
     await client.connect();
     const db = client.db("Slingair");
-    const objectId = new ObjectId(id);
-    const reservation = await db
-      .collection("reservations")
-      .findOne({ _id: objectId });
+
+    const reservation = await db.collection("reservations").findOne({ _id: id });
 
     if (reservation) {
       res.status(200).json(reservation);
