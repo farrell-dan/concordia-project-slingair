@@ -11,36 +11,50 @@ const options = {
 
 // creates a new reservation
 const addReservation = async (req, res) => {
-    const { flightCode, passengerName, seatNumber } = req.body;
-    const reservationId = uuidv4(); // generates a random id for the reso
-    const client = new MongoClient(MONGO_URI, options);
-  
-    try {
-      await client.connect();
-      const db = client.db("Slingair");
-  
-      const flight = await db.collection("flights").findOne({ _id: flightCode });
-  
-      if (flight && flight.seats.includes(seatNumber)) {
-        await db.collection("flights").updateOne({ _id: flightCode }, { $pull: { seats: seatNumber } });
-  
-        const result = await db.collection("reservations").insertOne({
-          _id: reservationId,
-          flightCode,
-          passengerName,
-          seatNumber,
-        });
-  
-        res.status(201).json({ _id: result.insertedId });
-      } else {
-        res.status(400).json({ error: "Invalid seat number or flight code" });
+  const { flight, seat, givenName, surname, email } = req.body;
+  const reservationId = uuidv4(); // generates a random id for the reso
+  const client = new MongoClient(MONGO_URI, options);
+
+  try {
+    await client.connect();
+    const db = client.db("Slingair");
+
+    const flightData = await db.collection("flights").findOne({ _id: flight });
+
+    if (flightData && flightData.seats.includes(seat)) {
+      const existingReservation = await db
+        .collection("reservations")
+        .findOne({ flight, seat });
+
+      if (existingReservation) {
+        return res.status(400).json({ error: "Seat already reserved" });
       }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Server Error" });
-    } finally {
-      client.close();
+
+      await db
+        .collection("flights")
+        .updateOne({ _id: flight }, { $pull: { seats: seat } });
+
+      const result = await db.collection("reservations").insertOne({
+        _id: reservationId,
+        flight,
+        seat,
+        givenName,
+        surname,
+        email,
+      });
+
+      return res.status(201).json({ _id: result.insertedId });
+    } else {
+      return res
+        .status(400)
+        .json({ error: "Invalid seat number or flight code" });
     }
-  };
-  
-  module.exports = addReservation;
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Server Error" });
+  } finally {
+    client.close();
+  }
+};
+
+module.exports = addReservation;
