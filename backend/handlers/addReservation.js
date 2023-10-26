@@ -11,7 +11,7 @@ const options = {
 
 // creates a new reservation
 const addReservation = async (req, res) => {
-  const { flightId, seat, givenName, surname, email } = req.body;
+  const { flight, seat, givenName, surname, email } = req.body;
   const reservationId = uuidv4(); // generates a random id for the reso
 
   const client = new MongoClient(MONGO_URI, options);
@@ -20,20 +20,23 @@ const addReservation = async (req, res) => {
     await client.connect();
     const db = client.db("Slingair");
 
-    const flightData = await db.collection("flights").findOne({ _id: flightId });
+    const flightData = await db.collection("flights").findOne({ _id: flight });
 
     if (flightData && flightData.seats.includes(seat)) {
-      const existingReservation = await db.collection("reservations").findOne({ flight: flightId, seat: seat });
+      const existingReservation = await db.collection("reservations").findOne({ flight: flight, seat: seat });
 
       if (existingReservation) {
         return res.status(400).json({ error: "Seat already reserved" });
       }
 
-      await db.collection("flights").updateOne({ _id: flightId }, { $pull: { seats: seat } });
-
+      await db.collection("flights").updateOne(
+        { _id: flight, "seats.id": seat },
+        { $set: { "seats.$.isAvailable": false } }
+      );
+      
       await db.collection("reservations").insertOne({
         _id: reservationId,
-        flight: flightId,
+        flight,
         seat,
         givenName,
         surname,
